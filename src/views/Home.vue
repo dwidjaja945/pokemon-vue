@@ -45,7 +45,7 @@
 
 <script>
 import Vue, { defineComponent } from 'vue';
-import { capitalize } from '@/toolkit/helpers';
+import { capitalize, getImage } from '@/toolkit/helpers';
 import Button from '@/components/Button.vue';
 
 const API_ENDPOINT = 'https://pokeapi.co/api/v2/pokedex/2';
@@ -85,7 +85,8 @@ export default defineComponent({
         return;
       }
       const newList = this.pokemonList
-        .filter((pokemonData) => Boolean(this.$store.state.savedPokemon[pokemonData.entry_number]));
+        .filter((pokemonData) =>
+          Boolean(this.$store.state.savedPokemon[pokemonData.entry_number]));
       this.pokemonList = newList;
     },
   },
@@ -102,9 +103,7 @@ export default defineComponent({
     handleToggle(toggleMode) {
       this.toggleMode = toggleMode;
     },
-    getImage(id) {
-      return `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
-    },
+    getImage,
   },
 });
 </script>
