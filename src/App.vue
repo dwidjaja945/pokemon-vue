@@ -37,4 +37,8 @@ body {
   --primaryDark: darken(#E3350D, 20);
   --secondaryDark: darken(#0F7173, 20);
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 </style>
