@@ -1,30 +1,40 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="header">
+    Where&apos;s that Pokémon?
   </div>
-  <router-view/>
+  <router-view />
 </template>
 
 <style lang="scss">
+body {
+  margin: 0;
+  padding: 0;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto,
+    Ubuntu, "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  font-size: 18px;
 }
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.header {
+  background-color: var(--primary);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 4rem;
+  box-shadow: 0 4px 15px 2px rgba(0, 0, 0, 0.25)
+}
+</style>
+<style>
+body {
+  --primary: #E3350D;
+  --secondary: #0F7173;
+  --primaryDark: darken(#E3350D, 20);
+  --secondaryDark: darken(#0F7173, 20);
 }
 </style>
