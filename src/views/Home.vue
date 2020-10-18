@@ -73,7 +73,7 @@ export default defineComponent({
             if (this.searchValue.length === 0) {
                 this.pokemonList = this.originalList;
             }
-            this.pokemonList = this.pokemonList
+            this.pokemonList = this.originalList
                 .filter(
                     (pokemonData) => pokemonData.pokemon_species.name
                         .includes(this.searchValue),
