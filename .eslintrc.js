@@ -18,6 +18,8 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'arrow-parens': 'off',
     'no-shadow': 'warn',
-    'indent': ['warn', 4]
+    'indent': ['warn', 4],
+    'no-restricted-syntax': 'off',
+    'guard-for-in': 'off'
   },
 };
