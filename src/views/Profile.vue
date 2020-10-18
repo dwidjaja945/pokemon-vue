@@ -52,8 +52,9 @@
 </template>
 
 <script>
-import Vue, { defineComponent } from 'vue';
+import Vue, { defineComponent, watch } from 'vue';
 import { capitalize, getImage } from '@/toolkit/helpers';
+import { useScript, useWatch } from '@/toolkit/hooks';
 
 const getPokemonDataEndpoint = id =>
     `https://pokeapi.co/api/v2/pokemon/${id}`;
@@ -75,23 +76,17 @@ const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
 
 export default defineComponent({
     name: 'Profile',
+    setup() {
+        const scriptLoaded = useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`);
+        return {
+            scriptLoaded,
+        };
+    },
     async beforeCreate() {
         const pokemonData = await getPokemonData(this.$route.params.id);
         this.pokemonData = pokemonData;
         const { locations } = await getPokemonLocation(this.$route.params.id);
         this.locations = locations;
-
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`;
-        script.defer = true;
-        script.async = true;
-
-        window.document.body.appendChild(script);
-        this.script = script;
-
-        script.addEventListener('load', () => {
-            this.scriptLoaded = true;
-        });
     },
     beforeUnmount() {
         window.document.body.removeChild(this.script);
@@ -100,7 +95,28 @@ export default defineComponent({
         pokemonSaved() {
             this.$store.dispatch('setSavedPokemon', this.id);
         },
-        scriptLoaded() {
+        ...useWatch(function () {
+            this.createMap();
+        }, 'scriptLoaded', 'locations'),
+    },
+    data() {
+        return {
+            id: this.$route.params.id,
+            pokemonData: null,
+            pokemonSaved: this.$store.state.savedPokemon[this.$route.params.id],
+            locations: [],
+        };
+    },
+    methods: {
+        capitalize,
+        getImage,
+        createGoogleMap(center) {
+            return new window.google.maps.Map(this.$refs.mapRef, {
+                zoom: 10,
+                center,
+            });
+        },
+        createMap() {
             if (this.scriptLoaded && this.locations.length) {
                 const firstLocation = this.locations[0];
                 if (firstLocation) {
@@ -123,25 +139,6 @@ export default defineComponent({
                     });
                 }
             }
-        },
-    },
-    data() {
-        return {
-            id: this.$route.params.id,
-            pokemonData: null,
-            pokemonSaved: this.$store.state.savedPokemon[this.$route.params.id],
-            locations: [],
-            scriptLoaded: false,
-        };
-    },
-    methods: {
-        capitalize,
-        getImage,
-        createGoogleMap(center) {
-            return new window.google.maps.Map(this.$refs.mapRef, {
-                zoom: 10,
-                center,
-            });
         },
     },
 });
@@ -168,7 +165,7 @@ export default defineComponent({
 
 .image {
     width: 50%;
-    min-width: 200px;
+    min-width: 300px;
     margin-bottom: 20px;
     min-height: 300px;
 }
