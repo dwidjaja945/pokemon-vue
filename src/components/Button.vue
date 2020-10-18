@@ -13,41 +13,41 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Button',
-  props: {
-    content: {},
-    className: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    outlined: {
-      type: Boolean,
-      default: false,
-      required: false,
-    },
-    primary: {
-      type: Boolean,
-      default: true,
-      required: false,
-    },
-  },
-  computed: {
-    buttonClasses(): (string | {[key: string]: boolean})[] {
-      return [
-        this.className,
-        {
-          primary: this.primary,
-          outlined: this.outlined,
+    name: 'Button',
+    props: {
+        content: {},
+        className: {
+            type: String,
+            required: false,
+            default: '',
         },
-      ];
+        outlined: {
+            type: Boolean,
+            default: false,
+            required: false,
+        },
+        primary: {
+            type: Boolean,
+            default: true,
+            required: false,
+        },
     },
-  },
-  methods: {
-    onClick() {
-      this.$emit('on-click');
+    computed: {
+        buttonClasses(): (string | {[key: string]: boolean})[] {
+            return [
+                this.className,
+                {
+                    primary: this.primary,
+                    outlined: this.outlined,
+                },
+            ];
+        },
     },
-  },
+    methods: {
+        onClick() {
+            this.$emit('on-click');
+        },
+    },
 });
 </script>
 

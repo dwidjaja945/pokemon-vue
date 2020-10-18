@@ -56,94 +56,94 @@ import Vue, { defineComponent } from 'vue';
 import { capitalize, getImage } from '@/toolkit/helpers';
 
 const getPokemonDataEndpoint = id =>
-  `https://pokeapi.co/api/v2/pokemon/${id}`;
+    `https://pokeapi.co/api/v2/pokemon/${id}`;
 const getPokemonLocationEndpoint = id =>
-  `https://api.craft-demo.net/pokemon/${id}`;
+    `https://api.craft-demo.net/pokemon/${id}`;
 
 const getPokemonData = id => fetch(getPokemonDataEndpoint(id))
-  .then(res => res.json())
-  .then(response => response);
+    .then(res => res.json())
+    .then(response => response);
 
 const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
-  method: 'GET',
-  headers: {
-    'x-api-key': 'HHko9Fuxf293b3w56zAJ89s3IcO9D5enaEPIg86l',
-  },
+    method: 'GET',
+    headers: {
+        'x-api-key': 'HHko9Fuxf293b3w56zAJ89s3IcO9D5enaEPIg86l',
+    },
 })
-  .then(res => res.json())
-  .then(response => response);
+    .then(res => res.json())
+    .then(response => response);
 
 export default defineComponent({
-  name: 'Profile',
-  async beforeCreate() {
-    const pokemonData = await getPokemonData(this.$route.params.id);
-    this.pokemonData = pokemonData;
-    const { locations } = await getPokemonLocation(this.$route.params.id);
-    this.locations = locations;
+    name: 'Profile',
+    async beforeCreate() {
+        const pokemonData = await getPokemonData(this.$route.params.id);
+        this.pokemonData = pokemonData;
+        const { locations } = await getPokemonLocation(this.$route.params.id);
+        this.locations = locations;
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`;
-    script.defer = true;
-    script.async = true;
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`;
+        script.defer = true;
+        script.async = true;
 
-    window.document.body.appendChild(script);
-    this.script = script;
+        window.document.body.appendChild(script);
+        this.script = script;
 
-    script.addEventListener('load', () => {
-      this.scriptLoaded = true;
-    });
-  },
-  beforeUnmount() {
-    window.document.body.removeChild(this.script);
-  },
-  watch: {
-    pokemonSaved() {
-      this.$store.dispatch('setSavedPokemon', this.id);
+        script.addEventListener('load', () => {
+            this.scriptLoaded = true;
+        });
     },
-    scriptLoaded() {
-      if (this.scriptLoaded && this.locations.length) {
-        const firstLocation = this.locations[0];
-        if (firstLocation) {
-          const [lat, lng] = firstLocation?.split(',');
-          const center = {
-            lat: Number(lat),
-            lng: Number(lng),
-          };
-          const map = this.createGoogleMap(center);
-          this.locations.forEach((location) => {
-            const [lat, lng] = location.split(',');
-            const position = {
-              lat: Number(lat),
-              lng: Number(lng),
-            };
-            const marker = new window.google.maps.Marker({
-              position,
-              map,
+    beforeUnmount() {
+        window.document.body.removeChild(this.script);
+    },
+    watch: {
+        pokemonSaved() {
+            this.$store.dispatch('setSavedPokemon', this.id);
+        },
+        scriptLoaded() {
+            if (this.scriptLoaded && this.locations.length) {
+                const firstLocation = this.locations[0];
+                if (firstLocation) {
+                    const [lat, lng] = firstLocation?.split(',');
+                    const center = {
+                        lat: Number(lat),
+                        lng: Number(lng),
+                    };
+                    const map = this.createGoogleMap(center);
+                    this.locations.forEach((location) => {
+                        const [lat, lng] = location.split(',');
+                        const position = {
+                            lat: Number(lat),
+                            lng: Number(lng),
+                        };
+                        const marker = new window.google.maps.Marker({
+                            position,
+                            map,
+                        });
+                    });
+                }
+            }
+        },
+    },
+    data() {
+        return {
+            id: this.$route.params.id,
+            pokemonData: null,
+            pokemonSaved: this.$store.state.savedPokemon[this.$route.params.id],
+            locations: [],
+            scriptLoaded: false,
+        };
+    },
+    methods: {
+        capitalize,
+        getImage,
+        createGoogleMap(center) {
+            return new window.google.maps.Map(this.$refs.mapRef, {
+                zoom: 10,
+                center,
             });
-          });
-        }
-      }
+        },
     },
-  },
-  data() {
-    return {
-      id: this.$route.params.id,
-      pokemonData: null,
-      pokemonSaved: this.$store.state.savedPokemon[this.$route.params.id],
-      locations: [],
-      scriptLoaded: false,
-    };
-  },
-  methods: {
-    capitalize,
-    getImage,
-    createGoogleMap(center) {
-      return new window.google.maps.Map(this.$refs.mapRef, {
-        zoom: 10,
-        center,
-      });
-    },
-  },
 });
 </script>
 

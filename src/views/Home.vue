@@ -51,60 +51,60 @@ import Button from '@/components/Button.vue';
 const API_ENDPOINT = 'https://pokeapi.co/api/v2/pokedex/2';
 
 const ToggleMode = {
-  ALL: 1,
-  SAVED: 2,
+    ALL: 1,
+    SAVED: 2,
 };
 
 export default defineComponent({
-  name: 'Home',
-  components: { Button },
-  data() {
-    return {
-      ALL: ToggleMode.ALL,
-      SAVED: ToggleMode.SAVED,
-      pokemonList: [],
-      originalList: [],
-      toggleMode: ToggleMode.ALL,
-      searchValue: '',
-    };
-  },
-  watch: {
-    searchValue() {
-      if (this.searchValue.length === 0) {
-        this.pokemonList = this.originalList;
-      }
-      this.pokemonList = this.pokemonList
-        .filter(
-          (pokemonData) => pokemonData.pokemon_species.name
-            .includes(this.searchValue),
-        );
+    name: 'Home',
+    components: { Button },
+    data() {
+        return {
+            ALL: ToggleMode.ALL,
+            SAVED: ToggleMode.SAVED,
+            pokemonList: [],
+            originalList: [],
+            toggleMode: ToggleMode.ALL,
+            searchValue: '',
+        };
     },
-    toggleMode() {
-      if (this.toggleMode === ToggleMode.ALL) {
-        this.pokemonList = this.originalList;
-        return;
-      }
-      const newList = this.pokemonList
-        .filter((pokemonData) =>
-          Boolean(this.$store.state.savedPokemon[pokemonData.entry_number]));
-      this.pokemonList = newList;
+    watch: {
+        searchValue() {
+            if (this.searchValue.length === 0) {
+                this.pokemonList = this.originalList;
+            }
+            this.pokemonList = this.pokemonList
+                .filter(
+                    (pokemonData) => pokemonData.pokemon_species.name
+                        .includes(this.searchValue),
+                );
+        },
+        toggleMode() {
+            if (this.toggleMode === ToggleMode.ALL) {
+                this.pokemonList = this.originalList;
+                return;
+            }
+            const newList = this.pokemonList
+                .filter((pokemonData) =>
+                    Boolean(this.$store.state.savedPokemon[pokemonData.entry_number]));
+            this.pokemonList = newList;
+        },
     },
-  },
-  beforeCreate() {
-    fetch(API_ENDPOINT)
-      .then((res) => res.json())
-      .then((resp) => {
-        this.pokemonList = resp.pokemon_entries;
-        this.originalList = this.pokemonList;
-      });
-  },
-  methods: {
-    capitalize,
-    handleToggle(toggleMode) {
-      this.toggleMode = toggleMode;
+    beforeCreate() {
+        fetch(API_ENDPOINT)
+            .then((res) => res.json())
+            .then((resp) => {
+                this.pokemonList = resp.pokemon_entries;
+                this.originalList = this.pokemonList;
+            });
     },
-    getImage,
-  },
+    methods: {
+        capitalize,
+        handleToggle(toggleMode) {
+            this.toggleMode = toggleMode;
+        },
+        getImage,
+    },
 });
 </script>
 
