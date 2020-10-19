@@ -72,16 +72,14 @@ const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
     headers: {
         'x-api-key': 'HHko9Fuxf293b3w56zAJ89s3IcO9D5enaEPIg86l',
     },
-})
-    .then(res => res.json())
+}).then(res => res.json())
     .then(response => response);
 
 export default defineComponent({
     name: 'Profile',
     setup() {
-        const { loaded, error } = useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`);
         return {
-            scriptLoaded: loaded,
+            ...useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`),
         };
     },
     async created() {
@@ -91,6 +89,7 @@ export default defineComponent({
     },
     beforeUnmount() {
         window.document.body.removeChild(this.script);
+        this.unMount();
     },
     watch: {
         pokemonSaved() {
