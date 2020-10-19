@@ -62,7 +62,7 @@ import {
 } from 'vue';
 import Button from '@/components/Button.vue';
 import { capitalizeMixin, getImageMixin } from '@/toolkit/helpers';
-import { useScriptMixin, useWatch } from '@/toolkit/hooks';
+import { useScriptMixin, useWatchMixin } from '@/toolkit/hooks';
 import { useStore } from 'vuex';
 
 const getPokemonDataEndpoint = (id: string): string =>
@@ -93,6 +93,9 @@ export default defineComponent({
         useScriptMixin(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`),
         capitalizeMixin,
         getImageMixin,
+        useWatchMixin(function (this: any): void {
+            this.createMap();
+        }, 'scriptLoaded', 'locations'),
     ],
     async created() {
         this.pokemonData = await getPokemonData(this.$route.params.id);
@@ -103,9 +106,6 @@ export default defineComponent({
         pokemonSaved() {
             this.$store.dispatch('setSavedPokemon', this.id);
         },
-        ...useWatch(function (this: any): void {
-            this.createMap();
-        }, 'scriptLoaded', 'locations'),
     },
     data() {
         const store = useStore();
