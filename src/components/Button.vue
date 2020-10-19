@@ -5,7 +5,7 @@
     v-bind:class="buttonClasses"
     @click="onClick()"
   >
-    {{content}}
+    <slot />
   </button>
 </template>
 
@@ -18,18 +18,15 @@ export default defineComponent({
         content: {},
         className: {
             type: String,
-            required: false,
             default: '',
         },
         outlined: {
             type: Boolean,
             default: false,
-            required: false,
         },
         primary: {
             type: Boolean,
             default: true,
-            required: false,
         },
     },
     computed: {

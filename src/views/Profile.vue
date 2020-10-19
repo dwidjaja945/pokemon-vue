@@ -1,13 +1,18 @@
 <template>
   <div class="container">
     <div class="leftPanel">
+        <Button
+          @on-click="$router.push('/')"
+         >
+           Back
+         </Button>
         <div class="imageContainer">
             <img
                 :src="getImage(id)"
                 class="image"
             />
             <span class="name">
-                {{capitalize(pokemonData?.name)}}
+                {{ capitalize(pokemonData?.name) }}
             </span>
         </div>
         <div class="typeContainer">
@@ -51,23 +56,25 @@
 </div>
 </template>
 
-<script>
-import Vue, {
+<script lang="ts">
+import {
     defineComponent,
 } from 'vue';
-import { capitalize, getImage } from '@/toolkit/helpers';
-import { useScript, useWatch } from '@/toolkit/hooks';
+import Button from '@/components/Button.vue';
+import { capitalizeMixin, getImageMixin } from '@/toolkit/helpers';
+import { useScriptMixin, useWatch } from '@/toolkit/hooks';
+import { useStore } from 'vuex';
 
-const getPokemonDataEndpoint = id =>
+const getPokemonDataEndpoint = (id: string): string =>
     `https://pokeapi.co/api/v2/pokemon/${id}`;
-const getPokemonLocationEndpoint = id =>
+const getPokemonLocationEndpoint = (id: string): string =>
     `https://api.craft-demo.net/pokemon/${id}`;
 
-const getPokemonData = id => fetch(getPokemonDataEndpoint(id))
+const getPokemonData = (id: string): Promise<any> => fetch(getPokemonDataEndpoint(id))
     .then(res => res.json())
     .then(response => response);
 
-const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
+const getPokemonLocation = (id: string): Promise<any> => fetch(getPokemonLocationEndpoint(id), {
     method: 'GET',
     headers: {
         'x-api-key': 'HHko9Fuxf293b3w56zAJ89s3IcO9D5enaEPIg86l',
@@ -75,43 +82,45 @@ const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
 }).then(res => res.json())
     .then(response => response);
 
+const currentWindow: Window & typeof window.globalThis & {
+  google?: any;
+} = window;
+
 export default defineComponent({
     name: 'Profile',
-    setup() {
-        return {
-            ...useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`),
-        };
-    },
+    components: { Button },
+    mixins: [
+        useScriptMixin(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`),
+        capitalizeMixin,
+        getImageMixin,
+    ],
     async created() {
         this.pokemonData = await getPokemonData(this.$route.params.id);
         const { locations } = await getPokemonLocation(this.$route.params.id);
         this.locations = locations;
     },
-    beforeUnmount() {
-        window.document.body.removeChild(this.script);
-        this.unMount();
-    },
     watch: {
         pokemonSaved() {
             this.$store.dispatch('setSavedPokemon', this.id);
         },
-        ...useWatch(function () {
+        ...useWatch(function (this: any): void {
             this.createMap();
         }, 'scriptLoaded', 'locations'),
     },
     data() {
+        const store = useStore();
+        const { id } = this.$route.params;
         return {
             id: this.$route.params.id,
             pokemonData: null,
-            pokemonSaved: this.$store.state.savedPokemon[this.$route.params.id],
+            pokemonSaved: store.state.savedPokemon[String(id)],
             locations: [],
+            store,
         };
     },
     methods: {
-        capitalize,
-        getImage,
-        createGoogleMap(center) {
-            return new window.google.maps.Map(this.$refs.mapRef, {
+        createGoogleMap(center: {[key: string]: string}) {
+            return new currentWindow.google.maps.Map(this.$refs.mapRef, {
                 zoom: 10,
                 center,
             });
@@ -126,13 +135,13 @@ export default defineComponent({
                         lng: Number(lng),
                     };
                     const map = this.createGoogleMap(center);
-                    this.locations.forEach((location) => {
+                    this.locations.forEach((location: string): void => {
                         const [lat, lng] = location.split(',');
                         const position = {
                             lat: Number(lat),
                             lng: Number(lng),
                         };
-                        const marker = new window.google.maps.Marker({
+                        const marker = new currentWindow.google.maps.Marker({
                             position,
                             map,
                         });

@@ -22,6 +22,8 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'guard-for-in': 'off',
     'no-param-reassign': 'warn',
-    'no-return-assign': 'warn'
+    'no-return-assign': 'warn',
+    '@typescript-eslint/camelcase': 'off',
+    'func-names': 'off'
   },
 };

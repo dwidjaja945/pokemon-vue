@@ -1,2 +1,7 @@
-export const getImage = (id: string | number): string =>
-  `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
+export const getImageMixin = {
+    methods: {
+        getImage(id: string) {
+            return `https://pokeres.bastionbot.org/images/pokemon/${id}.png`;
+        },
+    },
+};

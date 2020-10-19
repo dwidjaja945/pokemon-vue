@@ -11,6 +11,12 @@ export default createStore<State>({
         savedPokemon: {},
     },
     mutations: {
+        setInitialSavedPokemon(state: State, id: string) {
+            const item = localStorage.getItem(id);
+            if (item) {
+                state.savedPokemon[id] = true;
+            }
+        },
         setSavedPokemon(state, id) {
             const { savedPokemon: newSavedPokemon } = state;
             const item = localStorage.getItem(id);
@@ -25,7 +31,12 @@ export default createStore<State>({
         },
     },
     actions: {
-        setSavedPokemon({ commit }, id) {
+        setInitialSavedPokemon({ commit }, pokemonList: any[]): void {
+            for (const { entry_number } of pokemonList) {
+                commit('setInitialSavedPokemon', entry_number);
+            }
+        },
+        setSavedPokemon({ commit }, id: string) {
             commit('setSavedPokemon', id);
         },
     },

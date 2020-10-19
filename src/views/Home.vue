@@ -5,14 +5,16 @@
         @on-click="handleToggle(ALL)"
         :outlined="toggleMode === SAVED"
         className="button"
-        content="All"
-      />
+      >
+        All
+      </Button>
       <Button
         @on-click="handleToggle(SAVED)"
         :outlined="toggleMode === ALL"
         className="button"
-        content="Saved"
-        />
+        >
+        Saved
+      </Button>
     </div>
     <div class="inputContainer">
       <div class="inputContent" >
@@ -43,21 +45,26 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue, { defineComponent } from 'vue';
-import { capitalize, getImage } from '@/toolkit/helpers';
+import { useStore } from 'vuex';
+import { capitalizeMixin, getImageMixin } from '@/toolkit/helpers';
 import Button from '@/components/Button.vue';
 
 const API_ENDPOINT = 'https://pokeapi.co/api/v2/pokedex/2';
 
-const ToggleMode = {
-    ALL: 1,
-    SAVED: 2,
-};
+enum ToggleMode {
+    ALL = 1,
+    SAVED = 2,
+}
 
 export default defineComponent({
     name: 'Home',
     components: { Button },
+    mixins: [
+        getImageMixin,
+        capitalizeMixin,
+    ],
     data() {
         return {
             ALL: ToggleMode.ALL,
@@ -66,6 +73,7 @@ export default defineComponent({
             originalList: [],
             toggleMode: ToggleMode.ALL,
             searchValue: '',
+            store: useStore(),
         };
     },
     watch: {
@@ -75,7 +83,7 @@ export default defineComponent({
             }
             this.pokemonList = this.originalList
                 .filter(
-                    (pokemonData) => pokemonData.pokemon_species.name
+                    (pokemonData: any) => pokemonData.pokemon_species.name
                         .includes(this.searchValue),
                 );
         },
@@ -84,10 +92,13 @@ export default defineComponent({
                 this.pokemonList = this.originalList;
                 return;
             }
-            const newList = this.pokemonList
-                .filter((pokemonData) =>
-                    Boolean(this.$store.state.savedPokemon[pokemonData.entry_number]));
+            const newList = this.originalList
+                .filter((pokemonData: any) =>
+                    Boolean(this.store.state.savedPokemon[pokemonData.entry_number]));
             this.pokemonList = newList;
+        },
+        originalList() {
+            this.store.dispatch('setInitialSavedPokemon', this.originalList);
         },
     },
     beforeCreate() {
@@ -99,11 +110,9 @@ export default defineComponent({
             });
     },
     methods: {
-        capitalize,
-        handleToggle(toggleMode) {
+        handleToggle(toggleMode: ToggleMode) {
             this.toggleMode = toggleMode;
         },
-        getImage,
     },
 });
 </script>

@@ -1,37 +1,38 @@
-import { ref, Ref, reactive } from 'vue';
+import {
+    ComponentOptions,
+} from 'vue';
 
-type UseScript = {
-  [key: string]: Ref<boolean>;
-} & {
-  unMount?(): void;
-}
+export const useScriptMixin = (src: string): ComponentOptions => ({
+    beforeMount() {
+        const script = document.createElement('script');
+        script.src = src;
+        script.defer = true;
+        script.async = true;
 
-export const useScript = (src: string): UseScript => {
-    const output: UseScript = {
-        scriptLoaded: ref(false),
-        scriptError: ref(false),
-    };
-    const script = document.createElement('script');
-    script.src = src;
-    script.defer = true;
-    script.async = true;
+        this.script = script;
 
-    window.document.body.appendChild(script);
+        window.document.body.appendChild(script);
 
-    const handleLoad = (): void => {
-        output.scriptLoaded.value = true;
-    };
-    const handleError = (): void => {
-        output.scriptError.value = true;
-    };
+        const handleLoad = (): void => {
+            this.scriptLoaded = true;
+        };
+        const handleError = (): void => {
+            this.scriptError = true;
+        };
 
-    script.addEventListener('load', handleLoad);
-    script.addEventListener('error', handleError);
-
-    output.unMount = (): void => {
-        script.removeEventListener('load', handleLoad);
-        script.removeEventListener('error', handleError);
-    };
-
-    return output;
-};
+        script.addEventListener('load', handleLoad);
+        script.addEventListener('error', handleError);
+    },
+    beforeUnmount() {
+        if (this.script) {
+            window.document.body.removeChild(this.script);
+        }
+    },
+    data() {
+        return {
+            scriptLoaded: false,
+            scriptError: false,
+            script: null,
+        };
+    },
+});
