@@ -20,6 +20,8 @@ module.exports = {
     'no-shadow': 'warn',
     'indent': ['warn', 4],
     'no-restricted-syntax': 'off',
-    'guard-for-in': 'off'
+    'guard-for-in': 'off',
+    'no-param-reassign': 'warn',
+    'no-return-assign': 'warn'
   },
 };

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import Vue, { defineComponent, watch } from 'vue';
+import Vue, { defineComponent, ref, watch } from 'vue';
 import { capitalize, getImage } from '@/toolkit/helpers';
 import { useScript, useWatch } from '@/toolkit/hooks';
 
@@ -77,12 +77,13 @@ const getPokemonLocation = id => fetch(getPokemonLocationEndpoint(id), {
 export default defineComponent({
     name: 'Profile',
     setup() {
-        const scriptLoaded = useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`);
+        const { loaded } = useScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.VUE_APP_GOOGLE_MAP_API_KEY}`);
+        const scriptLoaded = ref(loaded);
         return {
-            scriptLoaded,
+            scriptLoaded: loaded,
         };
     },
-    async beforeCreate() {
+    async created() {
         const pokemonData = await getPokemonData(this.$route.params.id);
         this.pokemonData = pokemonData;
         const { locations } = await getPokemonLocation(this.$route.params.id);

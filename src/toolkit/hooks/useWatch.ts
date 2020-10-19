@@ -5,7 +5,7 @@ interface WatchList {
 }
 
 export const useWatch = (fn: any, ...params: any[]): WatchList => {
-    const watchList: WatchList = {};
-    params.forEach((param): void => { watchList[param] = fn; });
+    const watchList = params.reduce<WatchList>((accum, curr) =>
+        accum[curr] = fn, {});
     return watchList;
 };

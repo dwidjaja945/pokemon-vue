@@ -1,6 +1,10 @@
 import { ref, Ref } from 'vue';
 
-export const useScript = (src: string): Ref<boolean> => {
+interface UseScript {
+  [key: string]: Ref<boolean>;
+}
+
+export const useScript = (src: string): UseScript => {
     const scriptLoaded = ref(false);
     const script = document.createElement('script');
     script.src = src;
@@ -13,5 +17,5 @@ export const useScript = (src: string): Ref<boolean> => {
         scriptLoaded.value = true;
     });
 
-    return scriptLoaded;
+    return { loaded: scriptLoaded };
 };
