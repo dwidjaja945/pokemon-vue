@@ -1,11 +1,14 @@
-import { ref, Ref } from 'vue';
+import { ref, Ref, reactive } from 'vue';
 
 interface UseScript {
   [key: string]: Ref<boolean>;
 }
 
 export const useScript = (src: string): UseScript => {
-    const scriptLoaded = ref(false);
+    const output = {
+        loaded: ref(false),
+        error: ref(false),
+    };
     const script = document.createElement('script');
     script.src = src;
     script.defer = true;
@@ -14,8 +17,8 @@ export const useScript = (src: string): UseScript => {
     window.document.body.appendChild(script);
 
     script.addEventListener('load', () => {
-        scriptLoaded.value = true;
+        output.loaded.value = true;
     });
 
-    return { loaded: scriptLoaded };
+    return output;
 };
