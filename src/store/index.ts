@@ -1,17 +1,17 @@
 import { createStore } from 'vuex';
 
-interface State {
+export interface VuexState {
   savedPokemon: {
     [key: string]: boolean;
   };
 }
 
-export default createStore<State>({
+export default createStore<VuexState>({
     state: {
         savedPokemon: {},
     },
     mutations: {
-        setInitialSavedPokemon(state: State, id: string) {
+        setInitialSavedPokemon(state: VuexState, id: string) {
             const item = localStorage.getItem(id);
             if (item) {
                 state.savedPokemon[id] = true;
