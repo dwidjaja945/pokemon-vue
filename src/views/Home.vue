@@ -66,10 +66,6 @@ interface PokemonListItem {
 
 type PokemonList = PokemonListItem[];
 
-interface PokemonImages {
-  [entry_number: string]: string;
-}
-
 export default defineComponent({
     name: 'Home',
     components: { Button },
