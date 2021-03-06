@@ -47,9 +47,10 @@
 
 <script lang="ts">
 import Vue, { defineComponent } from 'vue';
-import { useStore } from 'vuex';
+import { Store, useStore } from 'vuex';
 import { capitalizeMixin, getImageMixin } from '@/toolkit/helpers';
 import Button from '@/components/Button.vue';
+import { VuexState } from '@/store';
 
 const API_ENDPOINT = 'https://pokeapi.co/api/v2/pokedex/2';
 
@@ -58,6 +59,13 @@ enum ToggleMode {
     SAVED = 2,
 }
 
+interface PokemonListItem {
+  entry_number: number;
+  [key: string]: any;
+}
+
+type PokemonList = PokemonListItem[];
+
 export default defineComponent({
     name: 'Home',
     components: { Button },
@@ -65,7 +73,15 @@ export default defineComponent({
         getImageMixin,
         capitalizeMixin,
     ],
-    data() {
+    data(): {
+      ALL: ToggleMode;
+      SAVED: ToggleMode;
+      pokemonList: PokemonList;
+      originalList: PokemonList;
+      toggleMode: ToggleMode;
+      searchValue: string;
+      store: Store<VuexState>;
+      } {
         return {
             ALL: ToggleMode.ALL,
             SAVED: ToggleMode.SAVED,
@@ -83,7 +99,7 @@ export default defineComponent({
             }
             this.pokemonList = this.originalList
                 .filter(
-                    (pokemonData: any) => pokemonData.pokemon_species.name
+                    (pokemonData: PokemonListItem) => pokemonData.pokemon_species.name
                         .includes(this.searchValue),
                 );
         },
